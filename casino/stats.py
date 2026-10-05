@@ -24,7 +24,7 @@ class GameStats:
         return f"{self.wins / self.rounds_played * 100:.1f}%"
 
 
-def display_stats(stats: GameStats) -> None:
+def display_stats(stats: GameStats, show_betting: bool = True) -> None:
     """Display a post-game session summary."""
     clear_screen()
 
@@ -36,13 +36,18 @@ def display_stats(stats: GameStats) -> None:
         ("Hands Played", str(stats.rounds_played)),
         ("Wins", str(stats.wins)),
         ("Losses", str(stats.losses)),
-        ("Pushes", str(stats.pushes)),
-        ("Win Rate", stats.win_rate),
-        ("", ""),
-        ("Starting Balance", str(stats.starting_balance)),
-        ("Ending Balance", str(stats.ending_balance)),
-        ("Net Profit/Loss", net_str),
     ]
+    
+    if show_betting:
+        rows.append(("Pushes", str(stats.pushes)))
+    rows.append(("Win Rate", stats.win_rate))
+    if show_betting:
+        rows += [
+            ("", ""),
+            ("Starting Balance", str(stats.starting_balance)),
+            ("Ending Balance", str(stats.ending_balance)),
+            ("Net Profit/Loss", net_str),
+        ]
 
     label_width = max(len(r[0]) for r in rows)
     value_width = max(len(r[1]) for r in rows)

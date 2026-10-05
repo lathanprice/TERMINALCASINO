@@ -6,6 +6,7 @@ from .player import Player
 from casino.types import GameContext
 from casino.utils import clear_screen, cprint, cinput, display_topbar
 from casino.cards import UnoDeck, UnoCard
+from casino.stats import GameStats, display_stats
 
 UNO_HEADER = """
 ┌───────────────────────────────┐
@@ -96,6 +97,8 @@ def play_uno(ctx: GameContext) -> None:
     continueGame = True
     currentPlayerIndex = 0
     direction = 1
+    account = ctx.account
+    stats = gamestats = GameStats("UNO!", account.balance)
     while(continueGame) :
         i = players[currentPlayerIndex]
         current_card = discard[-1]
@@ -161,9 +164,16 @@ def play_uno(ctx: GameContext) -> None:
             i.hand.remove(new_card)
             if len(i.hand) == 0:
                 continueGame = False
+                stats.rounds_played += 1
+                if i is players[0]:
+                    stats.wins += 1
+                else:
+                    stats.losses += 1
+                stats.ending_balance = account.balance
                 display_uno_topbar(ctx)
                 cprint(f"{i.name} is the winner!")
                 cinput("Press enter when ready to exit")
+                display_stats(stats, show_betting=False)
                 break
             match new_card.rank:
                 case "skip":
